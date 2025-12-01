@@ -1,13 +1,43 @@
 const mario = document.querySelector(".mario")
 const pipe = document.querySelector(".pipe")
+const nuvem = document.querySelector("nuvem")
+const startButton = document.querySelector(".start")
+const gameOverScreen = document.querySelector(".game-over")
+const scoreElement = document.querySelector(".score")
 
-const jump = () => {
+audioStart = new Audio("./sound/audio_theme.mp3");
+const gameOverSound = new Audio("./sound/audio_gameover.mp3");
+
+left gameStarted = false;
+let score = 0;
+
+const startgame = () => {
+    gameStarted = true;
+    audioStart.play();
+
+    pipe.style.animation = "pipe-animation 1.5s infinite linear";
+
+   startButton.style.display = "none";
+    mario.style.opacity = "1";
+    pipe.style.opacity = "1";
+    nuvem.style.opacity = "1";
+}
+
+
+    const jump = () => {
     mario.classList.add("jump");
 
     setTimeout(() => {
         mario.classList.remove("jump");
     }
     ,500);
+}
+
+const updateScore = () => {
+    score += 1;
+    scoreElement.textContent = score;
+    const animationSpeed  = 1.5/ (1 + score/500);
+    pipe.style.animation = `pipe-animation ${animationSpeed}s infinite linear`;
 }
 
 const loop = setInterval(() => {
@@ -25,7 +55,19 @@ const marioPosition = +window.getComputedStyle(mario).bottom.replace("px", "");
         mario.style.width = "75px";
         mario.style.marginLeft = "50px";
 
+        audioStart.pause();
+        gameOverSound.play();
+        
         clearInterval(loop);
+        gameOverScreen.style.display = "flex";
+    } else if (pipePosition < 0 && gameStarted) {
+     updateScore();   
+     pipe.style.left = '';   
     }
 },10);
+
 document.addEventListener("keydown", jump);
+
+const restartGame = () => {
+    window.location.reload();
+}
